@@ -100,6 +100,7 @@ authRouter.get("/api/checkuser", (req, res, next) => {
 })
 
 // NEW USER - ASSIGN ROLE =======================================================================================
+
 authRouter.put("/api/setup/role", (req, res, next) => {
 
   let id = req.user._id;
@@ -119,6 +120,161 @@ authRouter.put("/api/setup/role", (req, res, next) => {
 
 })
 
+// GET USER - AFTER ASSIGN ROLE =======================================================================================
+
+authRouter.get("/api/setup/role/:id", (req, res, next) => {
+
+  let userId = req.params.id;
+  console.log("req.params.id is:"+ userId)
+  
+  User
+    .findById(userId)
+    .then( theUpdatedUser => {
+        res.status(200).json({ message: "Your role has been updated.", theUpdatedUser});
+      }
+    )
+    .catch(err => next(err)); // close User.findByIdAndUpdate()
+
+})
+
+
+// USER - EDIT NAME =======================================================================================================
+
+authRouter.put("/api/account/name/:id", (req, res, next) => {
+
+  let id = req.user._id;
+  console.log("req.user._id is:"+ id)
+  
+  const { fullName } = req.body;
+
+  User
+    .findByIdAndUpdate(id, {$set: {fullName: fullName}})
+    .then( theUpdatedUser => {
+        res.status(200).json({ message: "Your username has been updated.", theUpdatedUser});
+      }
+    )
+    .catch(err => next(err)); // close User.findByIdAndUpdate()
+
+})
+
+
+// USER - EDIT EMAIL =======================================================================================================
+
+authRouter.put("/api/account/email/:id", (req, res, next) => {
+
+  let id = req.user._id;
+  console.log("req.user._id is:"+ id)
+
+
+  console.log("Edit email - frontend form data from req.body: ", req.body);
+  const { email } = req.body;
+
+  if(email == "" ){
+    // send JSON file to the frontend if any of these fields are empty or password doesn't contain a number
+    res.status(401).json({ message: "Please provide a valid email." });
+    return;
+  }
+
+  User
+    .findOne({ email })
+    .then( foundUser => {
+      if(foundUser !== null ){
+        res.status(401).json({ message: "A user with the same email is already registered! Please provide a different email." });
+        return;
+      }
+
+      User
+        .findByIdAndUpdate(id, {$set: {email: email}})
+        .then( userDoc => { 
+          // if all good, log in the user automatically
+          // "req.login()" is a Passport method that calls "serializeUser()"
+          // (that saves the USER ID in the session)
+          
+          req.login(userDoc, (err) => {
+            if(err){
+              res.status(401).json({ message: "Something happened when logging in after the password update" });
+              return;
+            }
+            userDoc.encryptedPassword = undefined;
+            res.status(200).json({ userDoc });  
+          })
+         } )
+        .catch( err => next(err) ); // close User.findbyidandupdate()
+    })
+    .catch(err => next(err)); // close User.findOne()
+
+});
+
+
+
+// USER - EDIT PASSWORD =======================================================================================================
+
+
+authRouter.put("/api/account/password/:id", (req, res, next) => {
+ 
+  let id = req.user._id
+  const { password } = req.body;
+  console.log("Edit password - frontend form data: ", req.body);
+
+  if(password.match(/[0-9]/) === null){
+    // send JSON file to the frontend if any of these fields are empty or password doesn't contain a number
+    res.status(401).json({ message: "Please provide a valid password. Your password must contain a number!" });
+    return;
+  }
+
+
+    const bcryptSalt = 10;
+    const salt = bcrypt.genSaltSync(bcryptSalt);
+    const encryptedPassword = bcrypt.hashSync(password, salt);
+
+    User
+      .findByIdAndUpdate(id, { encryptedPassword})
+      .then( userDoc => { 
+        // if all good, log in the user automatically
+        // "req.login()" is a Passport method that calls "serializeUser()"
+        // (that saves the USER ID in the session)
+        
+        req.login(userDoc, (err) => {
+          if(err){
+            res.status(401).json({ message: "Something happened when logging in after the password update" });
+            return;
+          }
+          userDoc.encryptedPassword = undefined;
+          res.status(200).json({ userDoc });  
+        })
+
+       })
+      .catch(err => next(err)); // close User.findbyidandupdate()
+    
+    
+})
+    
+
+
+
+
+
+
+
+
+
+
+// GET USER - AFTER EDIT =======================================================================================
+
+authRouter.get("/api/account/:id", (req, res, next) => {
+
+  let userId = req.params.id;
+  console.log("req.params.id is:"+ userId)
+  
+  User
+    .findById(userId)
+    .then( theUpdatedUser => {
+        res.status(200).json({ message: "Your user has been updated.", theUpdatedUser});
+      }
+    )
+    .catch(err => next(err)); // close User.findByIdAndUpdate()
+
+})
 
 
 

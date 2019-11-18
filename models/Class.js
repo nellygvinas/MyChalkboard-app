@@ -9,15 +9,16 @@ const classSchema =  new Schema({
     required: true,
     minlength: 4
   },
-  teacher: String,
-  teacherId: {type: Schema.Types.ObjectId, ref: 'User'},
+  teacher: {
+    teacherName: String,
+    teacherId: {type: Schema.Types.ObjectId, ref: 'User'}},
   schoolName: {
     type: String
   },
   schoolId: {type: Schema.Types.ObjectId, ref: 'School'},
   classCode: {type: String, default: shortid.generate},
   creator: {type: Schema.Types.ObjectId, ref: 'User'},
-  parents: {type: Schema.Types.ObjectId, ref: 'User'},
+  parents: [{type: Schema.Types.ObjectId, ref: 'User'}],
   }, 
   {timestamps: true});
 

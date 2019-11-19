@@ -141,7 +141,7 @@ router.put('/api/classinfo/:id', (req, res, next) => {
 
 })
 
-// GET SCHOOLS (Admin/Teacher) - AXIOS GET =========================================================
+// GET SCHOOLS FOR A USER (Admin/Teacher) - AXIOS GET =========================================================
 
 router.get('/api/getschools/:id', (req, res, next) => {
   
@@ -158,7 +158,7 @@ router.get('/api/getschools/:id', (req, res, next) => {
 
 })
 
-// GET CLASSES (Admin/Teacher) - AXIOS GET =========================================================
+// GET CLASSES FOR A USER (Admin/Teacher) - AXIOS GET =========================================================
 
 router.get('/api/getclasses/:id', (req, res, next) => {
   
@@ -197,6 +197,161 @@ router.put('/api/school/update/:id', (req, res, next) => {
 
 })
 
+// UPDATE CLASS =========================================================================
+
+router.put('/api/class/update/:id', (req, res, next) => {
+  
+  let classId = req.params.id
+  // console.log("What is the school Id from params: ", classId)
+  console.log("What is in req.body", req.body)
+
+  const {className} = req.body
+
+  Class.findByIdAndUpdate(classId, {$set: {className}})
+  .then((classUpdated)=>{
+    
+    res.json({msg: 'Class updated', classUpdated});
+  })  
+  .catch((err)=>{
+    console.log(err)
+  })
+
+})
+
+// DELETE SCHOOL =========================================================================
+
+router.post('/api/school/delete/:id', (req, res, next) => {
+  
+  let schoolId = req.params.id
+  // console.log("What is the school Id from params: ", classId)
+  console.log("What is in req.body", req.body)
+
+  School.findByIdAndRemove(schoolId)
+  .then((deletedSchool)=>{
+    
+    res.json({msg: 'School deleted', deletedSchool});
+
+    // Class.find({schoolId: schoolId})
+    // .then((schoolsFound)=>{
+      
+    //   res.json({msg: 'Classes that are part of the deleted school:', schoolsFound});
+
+    // })  
+    // .catch((err)=>{
+    //   console.log(err)
+    // })
+
+
+  })  
+  .catch((err)=>{
+    console.log(err)
+  })
+
+})
+
+
+// DELETE CLASSES BY SCHOOL ID =========================================================================
+
+router.post('/api/classes/delete/:id', (req, res, next) => {
+  
+  let schoolId = req.params.id
+  
+  Class.find({schoolId: schoolId})
+  .then((foundClasses)=>{
+    
+    res.json({msg: 'Classes found', foundClasses});
+
+    // Class.find({schoolId: schoolId})
+    // .then((schoolsFound)=>{
+      
+    //   res.json({msg: 'Classes that are part of the deleted school:', schoolsFound});
+
+    // })  
+    // .catch((err)=>{
+    //   console.log(err)
+    // })
+
+      Class.deleteMany({schoolId: schoolId})
+      .then((deletedClasses)=>{
+        
+        res.json({msg: 'Classes deleted', deletedClasses});
+
+        // Class.find({schoolId: schoolId})
+        // .then((schoolsFound)=>{
+          
+        //   res.json({msg: 'Classes that are part of the deleted school:', schoolsFound});
+
+        // })  
+        // .catch((err)=>{
+        //   console.log(err)
+        // })
+
+
+      })  
+      .catch((err)=>{
+        console.log(err)
+      })
+
+
+  })  
+  .catch((err)=>{
+    console.log(err)
+  })
+
+
+})
+
+
+// DELETE POSTS BY CLASS ID =========================================================================
+
+router.post('/api/postings/delete/:id', (req, res, next) => {
+  
+  let classId = req.params.id
+  
+  Posting.find({class: classId})
+  .then((foundPosts)=>{
+    
+    res.json({msg: 'Posts found', foundPosts});
+
+    // Class.find({schoolId: schoolId})
+    // .then((schoolsFound)=>{
+      
+    //   res.json({msg: 'Classes that are part of the deleted school:', schoolsFound});
+
+    // })  
+    // .catch((err)=>{
+    //   console.log(err)
+    // })
+
+      Posting.deleteMany({class: classId})
+      .then((deletedPosts)=>{
+        
+        res.json({msg: 'Posts deleted', deletedPosts});
+
+        // Class.find({schoolId: schoolId})
+        // .then((schoolsFound)=>{
+          
+        //   res.json({msg: 'Classes that are part of the deleted school:', schoolsFound});
+
+        // })  
+        // .catch((err)=>{
+        //   console.log(err)
+        // })
+
+
+      })  
+      .catch((err)=>{
+        console.log(err)
+      })
+
+
+  })  
+  .catch((err)=>{
+    console.log(err)
+  })
+
+
+})
 
 
 module.exports = router;

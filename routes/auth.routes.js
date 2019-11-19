@@ -248,15 +248,6 @@ authRouter.put("/api/account/password/:id", (req, res, next) => {
     
     
 })
-    
-
-
-
-
-
-
-
-
 
 
 // GET USER - AFTER EDIT =======================================================================================
@@ -273,6 +264,36 @@ authRouter.get("/api/account/:id", (req, res, next) => {
       }
     )
     .catch(err => next(err)); // close User.findByIdAndUpdate()
+
+})
+
+// DELETE USER =======================================================================================
+
+authRouter.post("/api/account/:id", (req, res, next) => {
+  
+  userId = req.params.id
+  console.log("Request to delete user: ", userId)
+
+  User.findByIdAndRemove(userId)
+  .then( theDeletedUser => {
+    res.status(200).json({ message: "The user has been deleted.", theDeletedUser});
+
+    authRouter.delete("/api/logout", (req, res, next) => {
+      // "req.logout()" is a Passport method that removes the user ID from session
+      req.logout();
+      // send empty "userDoc" when you log out
+      res.json({ userDoc: null })
+      // console.log("LOGGED OUT", userDoc)
+    })
+
+  })
+  .catch( err => next(err));
+
+
+  // req.logout();
+  // // send empty "userDoc" when you log out
+  // res.json({ userDoc: null })
+
 
 })
 

@@ -58,7 +58,7 @@ router.post('/api/setup/class', (req, res, next) => {
 
 })
 
-// GET CLASS INFO =================================================================================
+// GET CLASS INFO BY ID =================================================================================
 
 
 router.get('/api/classinfo/:id', (req, res, next) => {
@@ -80,6 +80,30 @@ router.get('/api/classinfo/:id', (req, res, next) => {
   })
 
 })
+
+// GET CLASS INFO BY CLASSCODE  =================================================================================
+
+
+router.get('/api/classinfo/:code', (req, res, next) => {
+  
+  let classCode = req.params.code
+
+  console.log("What is the class code from params: ", classCode)
+  // const {classId} = req.body; 
+  // console.log("the class id in req.body is", req.body)
+  // console.log("the class id is: ", classId)
+
+  Class.findOne({classCode: classCode})
+  .then((classFound)=>{
+    
+    res.json({msg: 'Class found', classFound});
+  })  
+  .catch((err)=>{
+    console.log(err)
+  })
+
+})
+
 
 
 // GET SCHOOL INFO =================================================================================
@@ -163,8 +187,9 @@ router.get('/api/getschools/:id', (req, res, next) => {
 router.get('/api/getclasses/:id', (req, res, next) => {
   
   let userId = req.params.id
+  
 
-  Class.find({$or:[{creator: userId},{teacher: {teacherId: userId}}]})
+  Class.find({$or:[{creator: userId},{'teacher.teacherId': userId}]})
   .then((classesFound)=>{
     
     res.json({msg: 'Classes created by user or user as teacher', classesFound});
@@ -285,19 +310,14 @@ router.post('/api/classes/delete/:id', (req, res, next) => {
         // .catch((err)=>{
         //   console.log(err)
         // })
-
-
       })  
       .catch((err)=>{
         console.log(err)
       })
-
-
   })  
   .catch((err)=>{
     console.log(err)
   })
-
 
 })
 
@@ -337,21 +357,19 @@ router.post('/api/postings/delete/:id', (req, res, next) => {
         // .catch((err)=>{
         //   console.log(err)
         // })
-
-
       })  
       .catch((err)=>{
         console.log(err)
       })
-
-
-  })  
-  .catch((err)=>{
+    })  
+   .catch((err)=>{
     console.log(err)
-  })
-
-
+   })
 })
+
+
+
+
 
 
 module.exports = router;

@@ -8,7 +8,8 @@ const postingSchema = new Schema({
     files: [{type: String}],
     class: {type: Schema.Types.ObjectId, ref: 'Class'},
     creator: {type: Schema.Types.ObjectId, ref: 'User'},
-    comments: String
+    likes: [{type: Schema.Types.ObjectId, ref: 'User'}],
+    comments: [String]
 })
 
 const postingModel = mongoose.model('Posting', postingSchema)

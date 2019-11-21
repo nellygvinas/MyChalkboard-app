@@ -68,7 +68,60 @@ router.get('/api/landing/posts/', (req, res, next) => {
 
 })
 
+
+// GET POSTS BY CLASS ID   =========================================================
+
+router.get('/api/posting/:classId', (req, res, next) => {
+
+  let classId = req.params.classId;
+
+  console.log("the user getting the posts is:", req.user)
+
+
+  Posting.find({class: classId})
+    .populate('class')
+    .populate('creator')
+    .then((posts) => {
+
+      posts.reverse()
+      
+      res.json({msg: 'posts found:', posts});
+
+    })
+    .catch((err) => {
+      next(err)
+    })
+
+
+})
  
+
+// LIKE A POST - AXIOS PUT =========================================================
+
+
+router.put('/api/landing/post/like/:postId', (req, res, next) => {
+
+  // console.log("user that is liking the post from req.user is: ", req.user)
+  const userId = req.body._id
+  console.log("current user id from req.body is : ", userId)
+  console.log("req.body is: ", req.body)
+  // let postId = req.params.postId;
+  // let userId = req.user._id
+
+
+
+  // Posting.findByIdAndUpdate(postId, {likes: likes.push(userId)})
+  //   .then((postLiked) => {
+      
+  //     res.json({msg: 'Like added to post:', postLiked});
+
+  //   })
+  //   .catch((err) => {
+  //     next(err)
+  //   })
+
+
+})
 
 
 // // CREATE NEW CLASS (ADMIN) - AXIOS POST =========================================================

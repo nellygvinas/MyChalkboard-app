@@ -13,30 +13,32 @@ const fileUploader = require('../../configs/cloudinary/cloudinaryConfig');
 
 // CREATE NEW POST - AXIOS =========================================================
 
-router.post('/api/landing/post', fileUploader.array('postingFiles', 10), (req, res, next)=>{
+router.post('/api/landing/post/:classId', fileUploader.array('file', 10), (req, res, next)=>{
     
-  // console.log("Data from req.body: ",req.body);
-  // console.log("Data from req.files: ",req.files);
-  // console.log("Data from req.files.url: ",req.files[0].url);
+  let classId = req.params.classId
 
+  console.log("Data from req.body: ",req.body);
+  console.log("Data from req.files: ",req.files);
+  
   let arrayOfFileUrls = [];
   let copyOfFiles = req.files.map((eachFile) => {
       arrayOfFileUrls.push(eachFile.url)
     }
   )
-
   console.log("Array of Posting File Urls: ", arrayOfFileUrls)
 
   Posting.create({ 
-      creation: req.body.postDate,
-      description: req.body.postDescription,
+      creation: req.body.creation,
+      description: req.body.description,
       files: arrayOfFileUrls,
-      class: req.body.postClassId,
+      class: classId,
       creator: req.user._id,
+      likes: [],
+      comments: []
   })
   .then((newPost)=>{
       
-      res.json({msg: 'New Posting JSON:', newPost});
+      res.json({msg: 'New Posting created:', newPost});
   })  
   .catch((err)=>{
       console.log(err)
@@ -64,7 +66,6 @@ router.post('/api/landing/file', fileUploader.array('uploadFiles', 10), (req, re
       creator: req.user._id,
   })
   .then((newDocs)=>{
-      
       res.json({msg: 'New Files JSON:', newDocs});
   })  
   .catch((err)=>{
@@ -74,25 +75,39 @@ router.post('/api/landing/file', fileUploader.array('uploadFiles', 10), (req, re
 })
 
 
-// EDIT CLASS (Admin/Teacher) - AXIOS POST =========================================================
+// GET POSTING - AXIOS POST =========================================================
 
-// router.put('/api/setup/class/edit', (req, res, next) => {
-  
-//   // let creatorId = req.user._id;
-
-//   const { className, teacher, schoolName, schoolId, creatorId } = req.body;
-//   console.log("Frontend form data for school: ",req.body);
-
-//   Class.create({ className, teacher, schoolName, schoolId, creatorId })
-//   .then((newClass)=>{
+// router.get('/api/landing/post/:classId', fileUploader.array('file', 10), (req, res, next)=>{
     
-//     res.json({msg: 'A new class has been added.', newClass});
-//     console.log(JSON.stringify(newClass))
+//   let classId = req.params.classId
+
+//   console.log("Data from req.body: ",req.body);
+//   console.log("Data from req.files: ",req.files);
+  
+//   let arrayOfFileUrls = [];
+//   let copyOfFiles = req.files.map((eachFile) => {
+//       arrayOfFileUrls.push(eachFile.url)
+//     }
+//   )
+//   console.log("Array of Posting File Urls: ", arrayOfFileUrls)
+
+//   Posting.create({ 
+//       creation: req.body.creation,
+//       description: req.body.description,
+//       files: arrayOfFileUrls,
+//       class: classId,
+//       creator: req.user._id,
+//       likes: [],
+//       comments: []
+//   })
+//   .then((newPost)=>{
+      
+//       res.json({msg: 'New Posting created:', newPost});
 //   })  
 //   .catch((err)=>{
-//     console.log(err)
+//       console.log(err)
 //   })
-
+  
 // })
 
 

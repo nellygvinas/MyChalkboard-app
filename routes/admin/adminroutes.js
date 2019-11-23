@@ -86,14 +86,14 @@ router.get('/api/classinfo/:id', (req, res, next) => {
 
 router.get('/api/classinfo/:code', (req, res, next) => {
   
-  let classCode = req.params.code
+  let code = req.params.code
 
-  console.log("What is the class code from params: ", classCode)
+  console.log("What is the class code from params: ", code)
   // const {classId} = req.body; 
   // console.log("the class id in req.body is", req.body)
   // console.log("the class id is: ", classId)
 
-  Class.findOne({classCode: classCode})
+  Class.findOne({classCode: code})
   .then((classFound)=>{
     
     res.json({msg: 'Class found', classFound});

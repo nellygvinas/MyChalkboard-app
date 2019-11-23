@@ -46,27 +46,32 @@ router.post('/api/landing/post/:classId', fileUploader.array('file', 10), (req, 
   
 })
 
-// CREATE NEW FILE POST - AXIOS =========================================================
+// CREATE NEW FILE - AXIOS =========================================================
 
-router.post('/api/landing/file', fileUploader.array('uploadFiles', 10), (req, res, next)=>{
+router.post('/api/landing/file/:classId', fileUploader.array('file', 10), (req, res, next)=>{
     
-  let arrayOfDocFileUrls = [];
-  let copyOfDocFiles = req.files.map((eachFile) => {
-      arrayOfDocFileUrls.push(eachFile.url)
+  let classId = req.params.classId
+
+  console.log("Data from req.body: ",req.body);
+  console.log("Data from req.files: ",req.files);
+  
+  let arrayOfFileUrls = [];
+  let copyOfFiles = req.files.map((eachFile) => {
+      arrayOfFileUrls.push(eachFile.url)
     }
   )
-  
-  console.log("Document File Urls: ", arrayOfDocFileUrls)
+  console.log("Array of Posting File Urls: ", arrayOfFileUrls)
 
   File.create({ 
-      creation: req.body.fileDate,
-      description: req.body.fileDescription,
-      files: arrayOfDocFileUrls,
-      class: req.body.postClassId,
-      creator: req.user._id,
+      creation: req.body.creation,
+      description: req.body.description,
+      files: arrayOfFileUrls,
+      class: classId,
+      creator: req.user._id
   })
-  .then((newDocs)=>{
-      res.json({msg: 'New Files JSON:', newDocs});
+  .then((newFile)=>{
+      
+      res.json({msg: 'New File created:', newFile});
   })  
   .catch((err)=>{
       console.log(err)
@@ -75,40 +80,38 @@ router.post('/api/landing/file', fileUploader.array('uploadFiles', 10), (req, re
 })
 
 
-// GET POSTING - AXIOS POST =========================================================
 
-// router.get('/api/landing/post/:classId', fileUploader.array('file', 10), (req, res, next)=>{
+// CREATE NEW FILE POST - AXIOS =========================================================
+
+// router.post('/api/landing/file', fileUploader.array('uploadFiles', 10), (req, res, next)=>{
     
-//   let classId = req.params.classId
-
-//   console.log("Data from req.body: ",req.body);
-//   console.log("Data from req.files: ",req.files);
-  
-//   let arrayOfFileUrls = [];
-//   let copyOfFiles = req.files.map((eachFile) => {
-//       arrayOfFileUrls.push(eachFile.url)
+//   let arrayOfDocFileUrls = [];
+//   let copyOfDocFiles = req.files.map((eachFile) => {
+//       arrayOfDocFileUrls.push(eachFile.url)
 //     }
 //   )
-//   console.log("Array of Posting File Urls: ", arrayOfFileUrls)
+  
+//   console.log("Document File Urls: ", arrayOfDocFileUrls)
 
-//   Posting.create({ 
-//       creation: req.body.creation,
-//       description: req.body.description,
-//       files: arrayOfFileUrls,
-//       class: classId,
+//   File.create({ 
+//       creation: req.body.fileDate,
+//       description: req.body.fileDescription,
+//       files: arrayOfDocFileUrls,
+//       class: req.body.postClassId,
 //       creator: req.user._id,
-//       likes: [],
-//       comments: []
 //   })
-//   .then((newPost)=>{
-      
-//       res.json({msg: 'New Posting created:', newPost});
+//   .then((newDocs)=>{
+//       res.json({msg: 'New Files JSON:', newDocs});
 //   })  
 //   .catch((err)=>{
 //       console.log(err)
 //   })
   
 // })
+
+
+// GET POSTING - AXIOS POST =========================================================
+
 
 
 
